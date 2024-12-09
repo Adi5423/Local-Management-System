@@ -5,7 +5,7 @@ from models import Book, Member
 books = []
 members = []
 
-@app.route('/books', methods=['POST'])
+@app.route('/books/add', methods=['POST'])
 def add_book():
     data = request.json
     new_book = Book(data['title'], data['author'], data['isbn'])
@@ -13,14 +13,9 @@ def add_book():
     books.append(new_book.__dict__)
     return jsonify(new_book.__dict__), 201
 
-@app.route('/books', methods=['GET'])
+@app.route('/books/get', methods=['GET'])
 def get_books():
     return jsonify(books), 200
-
-@app.route('/books/<int:id>', methods=['GET'])
-def get_book(id):
-    book = next((book for book in books if book['id'] == id), None)
-    return jsonify(book), 200 if book else 404
 
 @app.route('/books/<int:id>', methods=['PUT'])
 def update_book(id):

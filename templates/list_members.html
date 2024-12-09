@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member List</title>
+    <style>
+        .book-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book List</h1>
+    <div id="book-list">
+        {% for member in members %}
+            <div class="book-item">
+                {{ member.name }} (Membership ID: {{ member.membership_id }})
+            </div>
+        {% endfor %}
+    </div>
+    <a href="/">Back to Home</a>
+</body>
+</html>
