@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Library Management System</h1>
+    
+    <div class="dashboard">
+        <div class="card">
+            <h2>Books</h2>
+            <p>Total Books: {{ books_count }}</p>
+        </div>
+        <div class="card">
+            <h2>Members</h2>
+            <p>Total Members: {{ members_count }}</p>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn" onclick="window.location.href='/books/add'">Add Book</button>
+        <button class="btn" onclick="window.location.href='/books/list'">View Books</button>
+        <button class="btn" onclick="window.location.href='/books/search'">Search Books</button>
+        
+        <button class="btn" onclick="window.location.href='/members/add'">Add Member</button>
+        <button class="btn" onclick="window.location.href='/members/list'">View Members</button>
+    </div>
+
+    <div class="system-info ">
+        <h3>System Overview</h3>
+        <p>Welcome to the Library Management System. Use the buttons above to manage books and members.</p>
+    </div>
+
+    <script>
+        // Optional: Add some client-side interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Library Management System Loaded');
+        });
+    </script>
+</body>
+</html>
