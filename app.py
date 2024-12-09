@@ -1,11 +1,35 @@
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from models import Book, Member
+import json
+import os
 
 app = Flask(__name__)
 
-# In-memory data storage
-books = []
-members = []
+# Define the path to your JSON files
+BOOKS_FILE = 'books.json'
+MEMBERS_FILE = 'members.json'
+
+# Helper functions to read and write JSON files
+def read_json_file(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    return []
+
+def write_json_file(file_path, data):
+    with open(file_path, 'w') as f:
+        json.dump(data, f, indent=4)
+
+# Use JSON storage
+USE_JSON_STORAGE = True  # Set to False to use in-memory lists
+
+# Initialize your data
+if USE_JSON_STORAGE:
+    books = read_json_file(BOOKS_FILE)
+    members = read_json_file(MEMBERS_FILE)
+else:
+    books = []
+    members = []
 
 @app.route('/')
 def index():
@@ -26,6 +50,11 @@ def add_book():
         
         new_book.id = len(books) + 1  # Assign an ID
         books.append(new_book.__dict__)
+        
+        # Save to JSON file
+        if USE_JSON_STORAGE:
+            write_json_file(BOOKS_FILE, books)
+        
         return redirect(url_for('list_books'))  # Redirect to the list page after adding
 
     return render_template('add_book.html')
@@ -46,6 +75,11 @@ def edit_book(id):
             book['title'] = request.form['title']
             book['author'] = request.form['author']
             book['isbn'] = request.form['isbn']
+        
+        # Save to JSON file
+        if USE_JSON_STORAGE:
+            write_json_file(BOOKS_FILE, books)
+        
         return redirect(url_for('list_books'))
 
     return render_template('edit_book.html', book=book)
@@ -54,6 +88,11 @@ def edit_book(id):
 def delete_book(id):
     global books
     books = [book for book in books if book['id'] != id]
+    
+    # Save to JSON file
+    if USE_JSON_STORAGE:
+        write_json_file(BOOKS_FILE, books)
+    
     return redirect(url_for('list_books'))
 
 @app.route('/members/list')
@@ -71,6 +110,11 @@ def add_member():
         
         new_member.id = len(members) + 1  # Assign an ID
         members.append(new_member.__dict__)
+        
+        # Save to JSON file
+        if USE_JSON_STORAGE:
+            write_json_file(MEMBERS_FILE, members)
+        
         return redirect(url_for('list_members'))  # Redirect to the list page after adding
 
     return render_template('add_member.html')
@@ -89,6 +133,11 @@ def edit_member(id):
         else:  # Handle form submission
             member['name'] = request.form['name']
             member['membership_id'] = request.form['membership_id']
+        
+        # Save to JSON file
+        if USE_JSON_STORAGE:
+            write_json_file(MEMBERS_FILE, members)
+        
         return redirect(url_for('list_members'))
 
     return render_template('edit_member.html', member=member)
@@ -97,7 +146,24 @@ def edit_member(id):
 def delete_member(id):
     global members
     members = [member for member in members if member['id'] != id]
+    
+    # Save to JSON file
+    if USE_JSON_STORAGE:
+        write_json_file(MEMBERS_FILE, members)
+    
     return redirect(url_for('list_members'))
+
+@app.route('/members/search', methods=['GET', 'POST'])
+def search_members():
+    if request.method == 'POST':
+        query = request.form['query']
+        filtered_members = [
+            member for member in members 
+            if (query.lower() in member['name'].lower() or 
+                query.lower() in member['membership_id'].lower())
+        ]
+        return render_template('search_members.html', results=filtered_members)
+    return render_template('search_members.html', results=None)
 
 @app.route('/books/search', methods=['GET', 'POST'])
 def search_books():

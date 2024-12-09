@@ -1,4 +1,284 @@
-add_block.html
+app.py
+```python
+from flask import Flask, render_template, redirect, url_for, request, jsonify
+from models import Book, Member
+
+app = Flask(__name__)
+
+# In-memory data storage
+books = []
+members = []
+
+@app.route('/')
+def index():
+    return render_template('index.html', books_count=len(books), members_count=len(members))
+
+@app.route('/books/list')
+def list_books():
+    return render_template('list_books.html', books=books)
+
+@app.route('/books/add', methods=['GET', 'POST'])
+def add_book():
+    if request.method == 'POST':
+        if request.is_json:  # Check if the request is JSON
+            data = request.json
+            new_book = Book(data['title'], data['author'], data['isbn'])
+        else:  # Handle form submission
+            new_book = Book(request.form['title'], request.form['author'], request.form['isbn'])
+        
+        new_book.id = len(books) + 1  # Assign an ID
+        books.append(new_book.__dict__)
+        return redirect(url_for('list_books'))  # Redirect to the list page after adding
+
+    return render_template('add_book.html')
+
+@app.route('/books/edit/<int:id>', methods=['GET', 'POST'])
+def edit_book(id):
+    book = next((book for book in books if book['id'] == id), None)
+    if not book:
+        return render_template('error.html', message='Book not found'), 404
+
+    if request.method == 'POST':
+        if request.is_json:  # Check if the request is JSON
+            data = request.json
+            book['title'] = data.get('title', book['title'])
+            book['author'] = data.get('author', book['author'])
+            book['isbn'] = data.get('isbn', book['isbn'])
+        else:  # Handle form submission
+            book['title'] = request.form['title']
+            book['author'] = request.form['author']
+            book['isbn'] = request.form['isbn']
+        return redirect(url_for('list_books'))
+
+    return render_template('edit_book.html', book=book)
+
+@app.route('/books/delete/<int:id>', methods=['POST'])
+def delete_book(id):
+    global books
+    books = [book for book in books if book['id'] != id]
+    return redirect(url_for('list_books'))
+
+@app.route('/members/list')
+def list_members():
+    return render_template('list_members.html', members=members)
+
+@app.route('/members/add', methods=['GET', 'POST'])
+def add_member():
+    if request.method == 'POST':
+        if request.is_json:  # Check if the request is JSON
+            data = request.json
+            new_member = Member(data['name'], data['membership_id'])
+        else:  # Handle form submission
+            new_member = Member(request.form['name'], request.form['membership_id'])
+        
+        new_member.id = len(members) + 1  # Assign an ID
+        members.append(new_member.__dict__)
+        return redirect(url_for('list_members'))  # Redirect to the list page after adding
+
+    return render_template('add_member.html')
+
+@app.route('/members/edit/<int:id>', methods=['GET', 'POST'])
+def edit_member(id):
+    member = next((member for member in members if member['id'] == id), None)
+    if not member:
+        return render_template('error.html', message='Member not found'), 404
+
+    if request.method == 'POST':
+        if request.is_json:  # Check if the request is JSON
+            data = request.json
+            member['name'] = data.get('name', member['name'])
+            member['membership_id'] = data.get('membership_id', member['membership_id'])
+        else:  # Handle form submission
+            member['name'] = request.form['name']
+            member['membership_id'] = request.form['membership_id']
+        return redirect(url_for('list_members'))
+
+    return render_template('edit_member.html', member=member)
+
+@app.route('/members/delete/<int:id>', methods=['POST', 'DELETE'])
+def delete_member(id):
+    global members
+    members = [member for member in members if member['id'] != id]
+    return redirect(url_for('list_members'))
+
+@app.route('/books/search', methods=['GET', 'POST'])
+def search_books():
+    if request.method == 'POST':
+        query = request.form['query']
+        filtered_books = [
+            book for book in books 
+            if (query.lower() in book['title'].lower() or 
+                query.lower() in book['author'].lower() or 
+                query.lower() in book.get('isbn', '').lower())
+        ]
+        return render_template('search_books.html', results=filtered_books)
+    return render_template('search_books.html', results=None)
+
+@app.route('/crud', methods=['GET', 'POST'])
+def crud_operations():
+    return render_template('crud_operations.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+crud_operations.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>CRUD Operations</h1>
+    <div class="container">
+        <h2>Perform CRUD Operations via Postman</h2>
+        <p>Use the following endpoints:</p>
+        <ul>
+            <li><strong>GET Books:</strong> <code>/books/list</code></li>
+            <li><strong>POST Book:</strong> <code>/books/add</code> (Body: JSON)</li>
+            <li><strong>POST Book:</strong> <code>/books/edit/{id}</code> (Body: JSON)</li>
+            <li><strong>POST Book:</strong> <code>/books/delete/{id}</code></li>
+            <li><strong>GET Members:</strong> <code>/members/list</code></li>
+            <li><strong>POST Member:</strong> <code>/members/add</code> (Body: JSON)</li>
+            <li><strong>POST Member:</strong> <code>/members/edit/{id}</code> (Body: JSON)</li>
+            <li><strong>DELETE Member:</strong> <code>/members/delete/{id}</code></li>
+        </ul>
+        <p>Make sure to set the request type (GET, POST , DELETE) accordingly in Postman.</p>
+    </div>
+    <div class="container">
+        <button class="btn" onclick="window.location.href='/'">Switch to Manual Operations</button>
+    </div>
+</body>
+</html>
+```
+
+models.py
+```python
+# Data models for books and members
+class Book:
+    def __init__(self, title, author, isbn):
+        self.id = None  # Will be set when added to the list
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+
+class Member:
+    def __init__(self, name, membership_id):
+        self.id = None  # Will be set when added to the list
+        self.name = name
+        self.membership_id = membership_id
+```
+
+routes.py
+```python
+from flask import jsonify, request , render_template
+from app import app
+from models import Book, Member
+
+books = []
+members = []
+
+@app.route('/books/add', methods=['POST'])
+def add_book():
+    data = request.json
+    new_book = Book(data['title'], data['author'], data['isbn'])
+    new_book.id = len(books) + 1  # Assign an ID
+    books.append(new_book.__dict__)
+    return jsonify(new_book.__dict__), 201
+
+@app.route('/books/get', methods=['GET'])
+def get_books():
+    return jsonify(books), 200
+
+@app.route('/books/<int:id>', methods=['PUT'])
+def update_book(id):
+    data = request.json
+    book = next((book for book in books if book['id'] == id), None)
+    if book:
+        book.update(data)
+        return jsonify(book), 200
+    return jsonify({'error': 'Book not found'}), 404
+
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    global books
+    books = [book for book in books if book['id'] != id]
+    return jsonify({'message': 'Book deleted'}), 204
+# Add more routes for other CRUD operations and members...
+
+@app.route('/members', methods=['POST'])
+def add_member():
+    data = request.json
+    new_member = Member(data['name'], data['membership_id'])
+    new_member.id = len(members) + 1  # Assign an ID
+    members.append(new_member.__dict__)
+    return jsonify(new_member.__dict__), 201
+
+@app.route('/members', methods=['GET'])
+def get_members():
+    return jsonify(members), 200
+
+@app.route('/members/<int:id>', methods=['GET'])
+def get_member(id):
+    member = next((member for member in members if member['id'] == id), None)
+    return jsonify(member), 200 if member else 404
+
+@app.route('/members/<int:id>', methods=['PUT'])
+def update_member(id):
+    data = request.json
+    member = next((member for member in members if member['id'] == id), None)
+    if member:
+        member.update(data)
+        return jsonify(member), 200
+    return jsonify({'error': 'Member not found'}), 404
+
+@app.route('/members/<int:id>', methods=['DELETE'])
+def delete_member(id):
+    global members
+    members = [member for member in members if member['id'] != id]
+    return jsonify({'message': 'Member deleted'}), 204
+
+# @app.route('/books/search', methods=['GET', 'POST'])
+# def search_books():
+#     if request.method == 'POST':
+#         query = request.form['query']
+#         filtered_books = [
+#             book for book in books 
+#             if (query.lower() in book['title'].lower() or 
+#                 query.lower() in book['author'].lower() or 
+#                 query.lower() in book.get('isbn', '').lower())
+#         ]
+#         return render_template('search_books.html', results=filtered_books)
+#     return render_template('search_books.html', results=None)
+```
+
+add_book.html
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -6,15 +286,67 @@ add_block.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
 </head>
 <body>
     <h1>Add New Book</h1>
-    <form method="POST">
-        <input type="text" name="title" placeholder="Book Title" required>
-        <input type="text" name="author" placeholder="Author" required>
-        <input type="text" name="isbn" placeholder="ISBN" required>
-        <button type="submit">Add Book</button>
-    </form>
+    <div class="container">
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Book Title</label>
+                <input type="text" name="title" placeholder="Book Title" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input type="text" name="author" placeholder="Author" required>
+            </div>
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input type="text" name="isbn" placeholder="ISBN" required>
+            </div>
+            <button class="btn" type="submit">Add Book</button>
+        </form>
+    </div>
     <a href="/">Back to Home</a>
 </body>
 </html>
@@ -28,14 +360,63 @@ add_member.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Member</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
 </head>
 <body>
     <h1>Add New Member</h1>
-    <form method="POST">
-        <input type="text" name="name" placeholder="Member Name" required>
-        <input type="text" name="membership_id" placeholder="Membership ID" required>
-        <button type="submit">Add Member</button>
-    </form>
+    <div class="container">
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Member Name</label>
+                <input type="text" name="name" placeholder="Member Name" required>
+            </div>
+            <div class="form-group">
+                <label for="membership_id">Membership ID</label>
+                <input type=" text" name="membership_id" placeholder="Membership ID" required>
+            </div>
+            <button class="btn" type="submit">Add Member</button>
+        </form>
+    </div>
     <a href="/">Back to Home</a>
 </body>
 </html>
@@ -49,18 +430,19 @@ list_members.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member List</title>
-    <style>
-        .book-item {
-            margin: 10px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Book List</h1>
-    <div id="book-list">
+    <h1>Member List</h1>
+    <div id="member-list" class="list-container">
         {% for member in members %}
-            <div class="book-item">
-                {{ member.name }} (Membership ID: {{ member.membership_id }})
+            <div class="member-item">
+                <strong>ID:</strong> {{ member.id }}<br>
+                <strong>Name:</strong> {{ member.name }}<br>
+                <strong>Membership ID:</strong> {{ member.membership_id }}<br>
+                <div class="button-container">
+                    <a class="edit-button" href="{{ url_for('edit_member', id=member.id) }}">Edit</a>
+                </div>
             </div>
         {% endfor %}
     </div>
@@ -69,7 +451,7 @@ list_members.html
 </html>
 ```
 
-list_blocks.html
+list_books.html
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -77,24 +459,101 @@ list_blocks.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book List</title>
-    <style>
-        .book-item {
-            margin: 10px 0;
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        function confirmDelete(event) {
+            if (!confirm("Are you sure you want to delete this book?")) {
+                event.preventDefault();
+            }
         }
-    </style>
+    </script>
 </head>
 <body>
     <h1>Book List</h1>
-    <div id="book-list">
+    <div id="book-list" class="list-container">
         {% for book in books %}
             <div class="book-item">
-                {{ book.title }} by {{ book.author }} (ISBN: {{ book.isbn }})
+                <strong>ID:</strong> {{ book.id }}<br>
+                <strong>Title:</strong> {{ book.title }}<br>
+                <strong>Author:</strong> {{ book.author }}<br>
+                <strong>ISBN:</strong> {{ book.isbn }}<br>
+                <div class="button-container">
+                    <form id="delete-book-form-{{ book.id }}" class="delete-book-form" method="POST" action="{{ url_for('delete_book', id=book.id) }}" onsubmit="return confirmDelete(event);">
+                        <button type="submit" class="delete-button">Delete Book</button>
+                    </form>
+                    <a class="edit-button" href="{{ url_for('edit_book', id=book.id) }}">Edit</a>
+                </div>
             </div>
         {% endfor %}
     </div>
     <a href="/">Back to Home</a>
 </body>
 </html>
+```
+
+static/styles.css
+```css
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+}
+
+.book-item, .member-item {
+    margin: 10px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%; /* Make items take full width */
+    max-width: 600px; /* Limit the width of items */
+    position: relative; /* For positioning the edit button */
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the right */
+    margin-top: 10px; /* Space between content and buttons */
+}
+
+.edit-button {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #45a049;
+}
+
+.delete-button {
+    padding: 8px 12px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px; /* Space between delete button and edit button */
+}
+
+.delete-button:hover {
+    background-color: #e53935;
+}
 ```
 
 search_books.html
@@ -105,17 +564,67 @@ search_books.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Books</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Optional: Link to a CSS file for styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .search-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>Search Books</h1>
     </header>
     <main>
-        <form method="POST" aria-label="Search for books">
-            <input type="text" name="query" placeholder="Search by title, author, or ISBN" required>
-            <button type="submit">Search</button>
-        </form>
+        <div class="search-container">
+            <form method="POST" aria-label="Search for books">
+                <input type="text" name="query" placeholder="Search by title, author, or ISBN" required>
+                <button class="btn" type="submit">Search</button>
+            </form>
+        </div>
 
         {% if results %}
         <section>
@@ -141,6 +650,8 @@ search_books.html
                 </tbody>
             </table>
         </section>
+        {% else %}
+        <p>No results found.</p>
         {% endif %}
         <footer>
             <a href="/">Back to Home</a>
@@ -151,7 +662,7 @@ search_books.html
 ```
 
 index.html
-```html
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -219,6 +730,12 @@ index.html
         <button class="btn" onclick="window.location.href='/members/list'">View Members</button>
     </div>
 
+    <!-- New CRUD Operations Section -->
+    <div class="crud-switcher">
+        <h3>Switch to CRUD Operations</h3>
+        <button class="btn" onclick="window.location.href='/crud'">Switch to CRUD</button>
+    </div>
+
     <div class="system-info ">
         <h3>System Overview</h3>
         <p>Welcome to the Library Management System. Use the buttons above to manage books and members.</p>
@@ -234,147 +751,99 @@ index.html
 </html>
 ```
 
-app.py
-```python
-from flask import Flask, render_template, redirect, url_for, request
-from models import Book, Member
-
-app = Flask(__name__)
-
-# In-memory data storage
-books = []
-members = []
-
-@app.route('/')
-def index():
-    return render_template('index.html', books_count=len(books), members_count=len(members))
-
-@app.route('/books/list')
-def list_books():
-    return render_template('list_books.html', books=books)
-
-@app.route('/books/add', methods=['GET', 'POST'])
-def add_book():
-    if request.method == 'POST':
-        new_book = Book(request.form['title'], request.form['author'], request.form['isbn'])
-        new_book.id = len(books) + 1
-        books.append(new_book.__dict__)
-        return redirect(url_for('index'))
-    return render_template('add_book.html')
-
-@app.route('/members/add', methods=['GET', 'POST'])
-def add_member():
-    if request.method == 'POST':
-        new_member = Member(request.form['name'], request.form['membership_id'])
-        new_member.id = len(members) + 1
-        members.append(new_member.__dict__)
-        return redirect(url_for('index'))
-    return render_template('add_member.html')
-
-@app.route('/members/list')
-def list_members():
-    return render_template('list_members.html', members=members)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+edit_book.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Edit Book</h1>
+    <form method="POST">
+        <label for="title">Book Title</label>
+        <input type="text" id="title" name="title" value="{{ book.title }}" required>
+        
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" value="{{ book.author }}" required>
+        
+        <label for="isbn">ISBN</label>
+        <input type="text" id="isbn" name="isbn" value="{{ book.isbn }}" required>
+        
+        <button type="submit">Update Book</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_book', id=book.id) }}">
+        <button type="submit">Delete Book</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>
 ```
-
-routes.py
-```python
-from flask import jsonify, request
-from app import app
-from models import Book, Member
-
-books = []
-members = []
-
-@app.route('/books/add', methods=['POST'])
-def add_book():
-    data = request.json
-    new_book = Book(data['title'], data['author'], data['isbn'])
-    new_book.id = len(books) + 1  # Assign an ID
-    books.append(new_book.__dict__)
-    return jsonify(new_book.__dict__), 201
-
-@app.route('/books/get', methods=['GET'])
-def get_books():
-    return jsonify(books), 200
-
-@app.route('/books/<int:id>', methods=['PUT'])
-def update_book(id):
-    data = request.json
-    book = next((book for book in books if book['id'] == id), None)
-    if book:
-        book.update(data)
-        return jsonify(book), 200
-    return jsonify({'error': 'Book not found'}), 404
-
-@app.route('/books/<int:id>', methods=['DELETE'])
-def delete_book(id):
-    global books
-    books = [book for book in books if book['id'] != id]
-    return jsonify({'message': 'Book deleted'}), 204
-# Add more routes for other CRUD operations and members...
-
-@app.route('/members', methods=['POST'])
-def add_member():
-    data = request.json
-    new_member = Member(data['name'], data['membership_id'])
-    new_member.id = len(members) + 1  # Assign an ID
-    members.append(new_member.__dict__)
-    return jsonify(new_member.__dict__), 201
-
-@app.route('/members', methods=['GET'])
-def get_members():
-    return jsonify(members), 200
-
-@app.route('/members/<int:id>', methods=['GET'])
-def get_member(id):
-    member = next((member for member in members if member['id'] == id), None)
-    return jsonify(member), 200 if member else 404
-
-@app.route('/members/<int:id>', methods=['PUT'])
-def update_member(id):
-    data = request.json
-    member = next((member for member in members if member['id'] == id), None)
-    if member:
-        member.update(data)
-        return jsonify(member), 200
-    return jsonify({'error': 'Member not found'}), 404
-
-@app.route('/members/<int:id>', methods=['DELETE'])
-def delete_member(id):
-    global members
-    members = [member for member in members if member['id'] != id]
-    return jsonify({'message': 'Member deleted'}), 204
-
-# search query test calling /books/search?query=
-@app.route('/books/search', methods=['GET'])
-def search_books():
-    query = request.args.get('query', '').lower()
-    filtered_books = [
-        book for book in books 
-        if (query in book['title'].lower() or 
-            query in book['author'].lower() or 
-            query in book.get('isbn', '').lower())
-    ]
-    return jsonify(filtered_books), 200
+error.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Edit Book</h1>
+    <form method="POST">
+        <label for="title">Book Title</label>
+        <input type="text" id="title" name="title" value="{{ book.title }}" required>
+        
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" value="{{ book.author }}" required>
+        
+        <label for="isbn">ISBN</label>
+        <input type="text" id="isbn" name="isbn" value="{{ book.isbn }}" required>
+        
+        <button type="submit">Update Book</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_book', id=book.id) }}">
+        <button type="submit">Delete Book</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>
 ```
-
-
-models.py
-```python
-# Data models for books and members
-class Book:
-    def __init__(self, title, author, isbn):
-        self.id = None  # Will be set when added to the list
-        self.title = title
-        self.author = author
-        self.isbn = isbn
-
-class Member:
-    def __init__(self, name, membership_id):
-        self.id = None  # Will be set when added to the list
-        self.name = name
-        self.membership_id = membership_id
+edit_member.html
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Member</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Edit Member</h1>
+    <form method="POST">
+        <label for="name">Member Name</label>
+        <input type="text" id="name" name="name" value="{{ member.name }}" required>
+        
+        <label for="membership_id">Membership ID</label>
+        <input type="text" id="membership_id" name="membership_id" value="{{ member.membership_id }}" required>
+        
+        <button type="submit">Update Member</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_member', id=member.id) }}">
+        <button type="submit">Delete Member</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>
 ```
