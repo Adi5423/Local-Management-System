@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Member</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Edit Member</h1>
+    <form method="POST">
+        <label for="name">Member Name</label>
+        <input type="text" id="name" name="name" value="{{ member.name }}" required>
+        
+        <label for="membership_id">Membership ID</label>
+        <input type="text" id="membership_id" name="membership_id" value="{{ member.membership_id }}" required>
+        
+        <button type="submit">Update Member</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_member', id=member.id) }}">
+        <button type="submit">Delete Member</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>

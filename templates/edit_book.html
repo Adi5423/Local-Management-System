@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Edit Book</h1>
+    <form method="POST">
+        <label for="title">Book Title</label>
+        <input type="text" id="title" name="title" value="{{ book.title }}" required>
+        
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author" value="{{ book.author }}" required>
+        
+        <label for="isbn">ISBN</label>
+        <input type="text" id="isbn" name="isbn" value="{{ book.isbn }}" required>
+        
+        <button type="submit">Update Book</button>
+    </form>
+    <form method="POST" action="{{ url_for('delete_book', id=book.id) }}">
+        <button type="submit">Delete Book</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>

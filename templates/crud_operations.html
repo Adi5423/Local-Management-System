@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>CRUD Operations</h1>
+    <div class="container">
+        <h2>Perform CRUD Operations via Postman</h2>
+        <p>Use the following endpoints:</p>
+        <ul>
+            <li><strong>GET Books:</strong> <code>/books/list</code></li>
+            <li><strong>POST Book:</strong> <code>/books/add</code> (Body: JSON)</li>
+            <li><strong>POST Book:</strong> <code>/books/edit/{id}</code> (Body: JSON)</li>
+            <li><strong>POST Book:</strong> <code>/books/delete/{id}</code></li>
+            <li><strong>GET Members:</strong> <code>/members/list</code></li>
+            <li><strong>POST Member:</strong> <code>/members/add</code> (Body: JSON)</li>
+            <li><strong>POST Member:</strong> <code>/members/edit/{id}</code> (Body: JSON)</li>
+            <li><strong>DELETE Member:</strong> <code>/members/delete/{id}</code></li>
+        </ul>
+        <p>Make sure to set the request type (GET, POST , DELETE) accordingly in Postman.</p>
+    </div>
+    <div class="container">
+        <button class="btn" onclick="window.location.href='/'">Switch to Manual Operations</button>
+    </div>
+</body>
+</html>
