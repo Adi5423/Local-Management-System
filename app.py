@@ -37,5 +37,18 @@ def add_member():
 def list_members():
     return render_template('list_members.html', members=members)
 
+@app.route('/books/search', methods=['GET', 'POST'])
+def search_books():
+    if request.method == 'POST':
+        query = request.form['query']
+        filtered_books = [
+            book for book in books 
+            if (query.lower() in book['title'].lower() or 
+                query.lower() in book['author'].lower() or 
+                query.lower() in book.get('isbn', '').lower())
+        ]
+        return render_template('search_books.html', results=filtered_books)
+    return render_template('search_books.html', results=None)
+
 if __name__ == '__main__':
     app.run(debug=True)

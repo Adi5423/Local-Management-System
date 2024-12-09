@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request , render_template
 from app import app
 from models import Book, Member
 
@@ -65,14 +65,15 @@ def delete_member(id):
     members = [member for member in members if member['id'] != id]
     return jsonify({'message': 'Member deleted'}), 204
 
-# search query test calling /books/search?query=
-@app.route('/books/search', methods=['GET'])
-def search_books():
-    query = request.args.get('query', '').lower()
-    filtered_books = [
-        book for book in books 
-        if (query in book['title'].lower() or 
-            query in book['author'].lower() or 
-            query in book.get('isbn', '').lower())
-    ]
-    return jsonify(filtered_books), 200
+# @app.route('/books/search', methods=['GET', 'POST'])
+# def search_books():
+#     if request.method == 'POST':
+#         query = request.form['query']
+#         filtered_books = [
+#             book for book in books 
+#             if (query.lower() in book['title'].lower() or 
+#                 query.lower() in book['author'].lower() or 
+#                 query.lower() in book.get('isbn', '').lower())
+#         ]
+#         return render_template('search_books.html', results=filtered_books)
+#     return render_template('search_books.html', results=None)
