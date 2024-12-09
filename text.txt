@@ -1,0 +1,380 @@
+add_block.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Book</title>
+</head>
+<body>
+    <h1>Add New Book</h1>
+    <form method="POST">
+        <input type="text" name="title" placeholder="Book Title" required>
+        <input type="text" name="author" placeholder="Author" required>
+        <input type="text" name="isbn" placeholder="ISBN" required>
+        <button type="submit">Add Book</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>
+```
+
+add_member.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Member</title>
+</head>
+<body>
+    <h1>Add New Member</h1>
+    <form method="POST">
+        <input type="text" name="name" placeholder="Member Name" required>
+        <input type="text" name="membership_id" placeholder="Membership ID" required>
+        <button type="submit">Add Member</button>
+    </form>
+    <a href="/">Back to Home</a>
+</body>
+</html>
+```
+
+list_members.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member List</title>
+    <style>
+        .book-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book List</h1>
+    <div id="book-list">
+        {% for member in members %}
+            <div class="book-item">
+                {{ member.name }} (Membership ID: {{ member.membership_id }})
+            </div>
+        {% endfor %}
+    </div>
+    <a href="/">Back to Home</a>
+</body>
+</html>
+```
+
+list_blocks.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List</title>
+    <style>
+        .book-item {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book List</h1>
+    <div id="book-list">
+        {% for book in books %}
+            <div class="book-item">
+                {{ book.title }} by {{ book.author }} (ISBN: {{ book.isbn }})
+            </div>
+        {% endfor %}
+    </div>
+    <a href="/">Back to Home</a>
+</body>
+</html>
+```
+
+search_books.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Books</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Optional: Link to a CSS file for styling -->
+</head>
+<body>
+    <header>
+        <h1>Search Books</h1>
+    </header>
+    <main>
+        <form method="POST" aria-label="Search for books">
+            <input type="text" name="query" placeholder="Search by title, author, or ISBN" required>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if results %}
+        <section>
+            <h2>Search Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in results %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.isbn }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        {% endif %}
+        <footer>
+            <a href="/">Back to Home</a>
+        </footer>
+    </main>
+</body>
+</html>
+```
+
+index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Library Management System</h1>
+    
+    <div class="dashboard">
+        <div class="card">
+            <h2>Books</h2>
+            <p>Total Books: {{ books_count }}</p>
+        </div>
+        <div class="card">
+            <h2>Members</h2>
+            <p>Total Members: {{ members_count }}</p>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn" onclick="window.location.href='/books/add'">Add Book</button>
+        <button class="btn" onclick="window.location.href='/books/list'">View Books</button>
+        <button class="btn" onclick="window.location.href='/books/search'">Search Books</button>
+        
+        <button class="btn" onclick="window.location.href='/members/add'">Add Member</button>
+        <button class="btn" onclick="window.location.href='/members/list'">View Members</button>
+    </div>
+
+    <div class="system-info ">
+        <h3>System Overview</h3>
+        <p>Welcome to the Library Management System. Use the buttons above to manage books and members.</p>
+    </div>
+
+    <script>
+        // Optional: Add some client-side interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Library Management System Loaded');
+        });
+    </script>
+</body>
+</html>
+```
+
+app.py
+```python
+from flask import Flask, render_template, redirect, url_for, request
+from models import Book, Member
+
+app = Flask(__name__)
+
+# In-memory data storage
+books = []
+members = []
+
+@app.route('/')
+def index():
+    return render_template('index.html', books_count=len(books), members_count=len(members))
+
+@app.route('/books/list')
+def list_books():
+    return render_template('list_books.html', books=books)
+
+@app.route('/books/add', methods=['GET', 'POST'])
+def add_book():
+    if request.method == 'POST':
+        new_book = Book(request.form['title'], request.form['author'], request.form['isbn'])
+        new_book.id = len(books) + 1
+        books.append(new_book.__dict__)
+        return redirect(url_for('index'))
+    return render_template('add_book.html')
+
+@app.route('/members/add', methods=['GET', 'POST'])
+def add_member():
+    if request.method == 'POST':
+        new_member = Member(request.form['name'], request.form['membership_id'])
+        new_member.id = len(members) + 1
+        members.append(new_member.__dict__)
+        return redirect(url_for('index'))
+    return render_template('add_member.html')
+
+@app.route('/members/list')
+def list_members():
+    return render_template('list_members.html', members=members)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+routes.py
+```python
+from flask import jsonify, request
+from app import app
+from models import Book, Member
+
+books = []
+members = []
+
+@app.route('/books/add', methods=['POST'])
+def add_book():
+    data = request.json
+    new_book = Book(data['title'], data['author'], data['isbn'])
+    new_book.id = len(books) + 1  # Assign an ID
+    books.append(new_book.__dict__)
+    return jsonify(new_book.__dict__), 201
+
+@app.route('/books/get', methods=['GET'])
+def get_books():
+    return jsonify(books), 200
+
+@app.route('/books/<int:id>', methods=['PUT'])
+def update_book(id):
+    data = request.json
+    book = next((book for book in books if book['id'] == id), None)
+    if book:
+        book.update(data)
+        return jsonify(book), 200
+    return jsonify({'error': 'Book not found'}), 404
+
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete_book(id):
+    global books
+    books = [book for book in books if book['id'] != id]
+    return jsonify({'message': 'Book deleted'}), 204
+# Add more routes for other CRUD operations and members...
+
+@app.route('/members', methods=['POST'])
+def add_member():
+    data = request.json
+    new_member = Member(data['name'], data['membership_id'])
+    new_member.id = len(members) + 1  # Assign an ID
+    members.append(new_member.__dict__)
+    return jsonify(new_member.__dict__), 201
+
+@app.route('/members', methods=['GET'])
+def get_members():
+    return jsonify(members), 200
+
+@app.route('/members/<int:id>', methods=['GET'])
+def get_member(id):
+    member = next((member for member in members if member['id'] == id), None)
+    return jsonify(member), 200 if member else 404
+
+@app.route('/members/<int:id>', methods=['PUT'])
+def update_member(id):
+    data = request.json
+    member = next((member for member in members if member['id'] == id), None)
+    if member:
+        member.update(data)
+        return jsonify(member), 200
+    return jsonify({'error': 'Member not found'}), 404
+
+@app.route('/members/<int:id>', methods=['DELETE'])
+def delete_member(id):
+    global members
+    members = [member for member in members if member['id'] != id]
+    return jsonify({'message': 'Member deleted'}), 204
+
+# search query test calling /books/search?query=
+@app.route('/books/search', methods=['GET'])
+def search_books():
+    query = request.args.get('query', '').lower()
+    filtered_books = [
+        book for book in books 
+        if (query in book['title'].lower() or 
+            query in book['author'].lower() or 
+            query in book.get('isbn', '').lower())
+    ]
+    return jsonify(filtered_books), 200
+```
+
+
+models.py
+```python
+# Data models for books and members
+class Book:
+    def __init__(self, title, author, isbn):
+        self.id = None  # Will be set when added to the list
+        self.title = title
+        self.author = author
+        self.isbn = isbn
+
+class Member:
+    def __init__(self, name, membership_id):
+        self.id = None  # Will be set when added to the list
+        self.name = name
+        self.membership_id = membership_id
+```

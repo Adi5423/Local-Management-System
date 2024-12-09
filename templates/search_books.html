@@ -4,17 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Books</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Optional: Link to a CSS file for styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .search-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>Search Books</h1>
     </header>
     <main>
-        <form method="POST" aria-label="Search for books">
-            <input type="text" name="query" placeholder="Search by title, author, or ISBN" required>
-            <button type="submit">Search</button>
-        </form>
+        <div class="search-container">
+            <form method="POST" aria-label="Search for books">
+                <input type="text" name="query" placeholder="Search by title , author, or ISBN" required>
+                <button class="btn" type="submit">Search</button>
+            </form>
+        </div>
 
         {% if results %}
         <section>

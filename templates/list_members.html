@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member List</title>
     <style>
-        .book-item {
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .member-item {
             margin: 10px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Book List</h1>
-    <div id="book-list">
+    <h1>Member List</h1>
+    <div id="member-list">
         {% for member in members %}
-            <div class="book-item">
+            <div class="member-item">
                 {{ member.name }} (Membership ID: {{ member.membership_id }})
             </div>
         {% endfor %}
