@@ -56,12 +56,15 @@ books.json: JSON file for storing book data.
 members.json: JSON file for storing member data.
 
 test_app.py: Contains automated tests for the application.
+test may fail cause not properly allinged 
+python -m unittest tests/test_app.py
 
 ## Working Mechanism
 Data Storage: The application uses JSON files (books.json and members.json) to store data persistently. When the application starts, it reads these files to load existing data.
 
 Routes: The application defines several routes for managing books and members:
 
+# Using Postman would be better approach
 ```bash
 /: Home page displaying counts of books and members.
 /books/list: Lists all books.
