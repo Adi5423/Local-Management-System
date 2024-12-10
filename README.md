@@ -113,7 +113,7 @@ python -m unittest tests/test_app.py
 - 💼 LinkedIn: [Aditya Tiwari](https://www.linkedin.com/in/aditya-tiwari-59b82927a/)
 - 🐱 GitHub: [GitHub Profile](https://github.com/adi5423)
 - 📧 Email: adii54ti23@gmail.com
-- 🐦 Twitter: [@yourusername](https://twitter.com/Adii5423)
+- 🐦 Twitter: [@Adii5423](https://twitter.com/Adii5423)
 
 Contributing
 If you would like to contribute to this project, feel free to fork the repository and submit a pull request. Any contributions, suggestions, or improvements are welcome!
