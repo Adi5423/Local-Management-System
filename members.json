@@ -3,5 +3,25 @@
         "id": 1,
         "name": "Adii",
         "membership_id": "5423"
+    },
+    {
+        "id": 2,
+        "name": "Test Member",
+        "membership_id": "M123"
+    },
+    {
+        "id": 3,
+        "name": "Test Member",
+        "membership_id": "M123"
+    },
+    {
+        "id": 4,
+        "name": "Test Member",
+        "membership_id": "M123"
+    },
+    {
+        "id": 5,
+        "name": "Searchable Member",
+        "membership_id": "M123"
     }
 ]
