@@ -45,14 +45,19 @@ python app.py
 ```
 The application will start, and you can access it in your web browser at http://127.0.0.1:5000/.
 
-Application Structure
+## Application Structure -:
 app.py: The main application file containing all the routes and logic.
+
 models.py: Contains the Book and Member classes (not provided in the original code, but assumed to exist).
+
 templates/: Directory containing HTML templates for rendering views.
 books.json: JSON file for storing book data.
+
 members.json: JSON file for storing member data.
+
 test_app.py: Contains automated tests for the application.
-Working Mechanism
+
+## Working Mechanism
 Data Storage: The application uses JSON files (books.json and members.json) to store data persistently. When the application starts, it reads these files to load existing data.
 
 Routes: The application defines several routes for managing books and members:
