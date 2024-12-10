@@ -8,6 +8,14 @@ This is a simple **Library Management System** built using **Flask**, a lightwei
 - **Data Storage**: Uses JSON files for data persistence.
 - **User -Friendly Interface**: Simple HTML templates for interaction.
 
+  
+### Project Highlights
+- **Efficient Book & Member Management**
+- **JSON-based Persistent Storage**
+- **Responsive Web Interface**
+- **Comprehensive Test Coverage**
+
+
 ## Technologies Used
 - **Flask**: Web framework for building the application.
 - **HTML/CSS**: For the front-end user interface.
@@ -70,7 +78,6 @@ members.json: JSON file for storing member data.
 
 test_app.py: Contains automated tests for the application.
 test may fail cause not properly allinged 
-python -m unittest tests/test_app.py
 
 ## Working Mechanism
 Data Storage: The application uses JSON files (books.json and members.json) to store data persistently. When the application starts, it reads these files to load existing data.
@@ -95,10 +102,18 @@ Routes: The application defines several routes for managing books and members:
 HTML Templates: The application uses HTML templates to render the user interface. Each route corresponds to a specific template that displays the relevant data and forms for user interaction.
 
 Automated Testing: The application includes a set of automated tests in test_app.py to ensure that all functionalities work as expected. You can run the tests using the following command:
-
+test may fail cause not properly allinged 
 ```bash
-python -m unittest test_app.py
+python -m unittest tests/test_app.py
 ```
+
+### 👨‍💻 About the Developer
+
+**Aditya Tiwari**
+- 💼 LinkedIn: [Aditya Tiwari](https://www.linkedin.com/in/aditya-tiwari-59b82927a/)
+- 🐱 GitHub: [GitHub Profile](https://github.com/adi5423)
+- 📧 Email: adii54ti23@gmail.com
+- 🐦 Twitter: [@yourusername](https://twitter.com/Adii5423)
 
 Contributing
 If you would like to contribute to this project, feel free to fork the repository and submit a pull request. Any contributions, suggestions, or improvements are welcome!
