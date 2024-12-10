@@ -45,6 +45,19 @@ python app.py
 ```
 The application will start, and you can access it in your web browser at http://127.0.0.1:5000/.
 
+To save the Books and Members list in JSON file in root directory. 
+Set the parameter :
+```bash
+#line 24
+USE_JSON_STORAGE = True 
+```
+If want to use List Storing system without JSON for Books and Members.
+Set the parameter :
+```bash
+#line 24
+USE_JSON_STORAGE = False
+```
+
 ## Application Structure -:
 app.py: The main application file containing all the routes and logic.
 
